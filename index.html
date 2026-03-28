@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#667eea">
+    <title>🧠 智能单词记忆</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧠 智能单词记忆</h1>
+            <p class="subtitle">输入任意单词，自动生成情境故事 + 词根拆解</p>
+        </header>
+
+        <main>
+            <div class="input-section">
+                <div class="input-group">
+                    <input type="text" id="wordInput" placeholder="输入英文单词，按回车生成..." autocomplete="off">
+                    <button id="generateBtn" class="generate-btn">✨ 生成</button>
+                </div>
+            </div>
+
+            <div id="loadingState" class="loading-state hidden">
+                <div class="spinner"></div>
+                <p>正在生成记忆内容...</p>
+            </div>
+
+            <div id="errorState" class="error-state hidden">
+                <p>❌ 未找到该单词，请检查拼写</p>
+            </div>
+
+            <div id="cardSection" class="card-section hidden">
+                <div class="card-container" id="cardContainer">
+                    <div class="card" id="card">
+                        <div class="card-face card-front">
+                            <div class="word-section">
+                                <h2 class="word" id="wordText">-</h2>
+                                <div class="phonetic-container">
+                                    <span class="phonetic" id="phoneticText">-</span>
+                                    <button class="speak-btn" id="speakBtn">🔊</button>
+                                </div>
+                                <a href="#" id="oxfordLink" class="dict-link" target="_blank">📖 查看牛津词典</a>
+                            </div>
+                            <div class="visual-section">
+                                <pre class="ascii-art" id="asciiArt"></pre>
+                                <div class="mnemonic" id="mnemonicText"></div>
+                            </div>
+                            <p class="flip-hint">👆 点击翻转看故事</p>
+                        </div>
+
+                        <div class="card-face card-back">
+                            <div class="back-content">
+                                <h3 class="meaning" id="meaningText">-</h3>
+                                <div class="story-section">
+                                    <h4>🎭 情境故事</h4>
+                                    <p class="story" id="storyText">-</p>
+                                </div>
+                                <div class="example-section">
+                                    <h4>💡 参考例句</h4>
+                                    <p class="example" id="exampleText">-</p>
+                                    <p class="example-cn" id="exampleCnText">-</p>
+                                </div>
+                                <div class="sentence-practice-section">
+                                    <h4>✏️ 造句练习</h4>
+                                    <div class="sentence-input-area">
+                                        <textarea id="sentenceInput" placeholder="用这个单词造一个句子..." rows="2"></textarea>
+                                        <button class="save-sentence-btn" id="saveSentenceBtn">保存</button>
+                                    </div>
+                                    <div class="user-sentences" id="userSentences"></div>
+                                    <div class="auto-sentences" id="autoSentences"></div>
+                                </div>
+                            </div>
+                            <p class="flip-hint">👆 点击返回</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="action-btn save-btn" id="saveBtn">💾 保存</button>
+                    <button class="action-btn share-btn" id="copyBtn">📋 复制</button>
+                </div>
+            </div>
+
+            <div class="history-section" id="historySection">
+                <div class="history-header">
+                    <h3>📚 历史记录</h3>
+                    <button class="clear-btn" id="clearHistory">清空</button>
+                </div>
+                <div class="history-list" id="historyList"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
