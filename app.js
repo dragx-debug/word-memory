@@ -47,6 +47,7 @@ class WordMemoryGenerator {
     init() {
         this.bindEvents();
         this.renderHistory();
+        this.initVoices();  // 初始化语音引擎
     }
 
     bindEvents() {
@@ -2101,14 +2102,101 @@ class WordMemoryGenerator {
         this.card.classList.toggle('flipped');
     }
 
-    speakWord() {
-        if (!this.currentWord) return;
+    speakWord(text = null) {
+        const content = text || (this.currentWord ? this.currentWord.word : null);
+        if (!content) return;
+
         if ('speechSynthesis' in window) {
             window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(this.currentWord.word);
+
+            const utterance = new SpeechSynthesisUtterance(content);
             utterance.lang = 'en-US';
-            utterance.rate = 0.8;
+            utterance.rate = 0.85;
+            utterance.pitch = 1.0;
+            utterance.volume = 1.0;
+
+            // 获取所有可用语音
+            const voices = window.speechSynthesis.getVoices();
+
+            // 优先选择的女声列表（按优先级排序）
+            const preferredVoices = [
+                // Mac 高质量女声
+                'Samantha',           // Mac 美式英语女声
+                'Victoria',           // Mac 英式英语女声
+                'Karen',              // Mac 澳大利亚英语女声
+                'Moira',              // Mac 爱尔兰英语女声
+                'Tessa',              // Mac 南非英语女声
+                'Fiona',              // Mac 苏格兰英语女声
+                // Windows 高质量女声
+                'Microsoft Zira',
+                'Microsoft Susan',
+                'Microsoft Hazel',
+                // Google 女声
+                'Google US English',
+                'Google UK English Female',
+                // iOS/Safari 女声
+                'Siri',
+                'Daniel',             // 英式男声（备选）
+                'Alex',               // Mac 美式男声（备选）
+            ];
+
+            // 尝试找到最佳语音
+            let selectedVoice = null;
+
+            // 首先尝试精确匹配
+            for (const preferred of preferredVoices) {
+                const found = voices.find(v =>
+                    v.name.includes(preferred) &&
+                    (v.lang.startsWith('en-US') || v.lang.startsWith('en-GB'))
+                );
+                if (found) {
+                    selectedVoice = found;
+                    break;
+                }
+            }
+
+            // 如果没找到，尝试找任何英语女声
+            if (!selectedVoice) {
+                const femaleKeywords = ['female', 'woman', 'girl', 'zira', 'samantha', 'victoria', 'karen', 'susan', 'hazel'];
+                for (const voice of voices) {
+                    if (voice.lang.startsWith('en')) {
+                        const nameLower = voice.name.toLowerCase();
+                        if (femaleKeywords.some(k => nameLower.includes(k))) {
+                            selectedVoice = voice;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // 最后备选：任何美式英语语音
+            if (!selectedVoice) {
+                selectedVoice = voices.find(v => v.lang === 'en-US') ||
+                                voices.find(v => v.lang.startsWith('en'));
+            }
+
+            if (selectedVoice) {
+                utterance.voice = selectedVoice;
+                console.log('使用语音:', selectedVoice.name);
+            }
+
             window.speechSynthesis.speak(utterance);
+        }
+    }
+
+    // 初始化语音（解决首次加载语音列表为空的问题）
+    initVoices() {
+        if ('speechSynthesis' in window) {
+            // 某些浏览器需要先调用 getVoices() 才能加载语音列表
+            const voices = window.speechSynthesis.getVoices();
+            if (voices.length === 0) {
+                // Chrome 需要等待 voiceschanged 事件
+                window.speechSynthesis.addEventListener('voiceschanged', () => {
+                    console.log('语音列表已加载:', window.speechSynthesis.getVoices().length, '个语音');
+                });
+            } else {
+                console.log('语音列表已就绪:', voices.length, '个语音');
+            }
         }
     }
 
