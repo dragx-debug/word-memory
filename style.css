@@ -257,13 +257,16 @@ header h1 {
 }
 
 .story, .example {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     color: var(--text-dark);
     background: #f9fafb;
     padding: 15px;
     border-radius: 12px;
     border-left: 4px solid var(--primary-color);
     margin-bottom: 8px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .example-cn {
